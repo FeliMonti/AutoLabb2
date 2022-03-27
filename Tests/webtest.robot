@@ -8,7 +8,7 @@ Suite Setup  Begin Web Test
 Suite Teardown  End Web Test
 
 *** Variables ***
-${BROWSER}  chrome
+${BROWSER}  headlesschrome
 ${URL}  http://rental13.infotiv.net/webpage/html/gui/index.php
 ${URLBOOKING}  http://rental13.infotiv.net/webpage/html/gui/index.php
 ${URLMYPAGE}  http://rental13.infotiv.net/webpage/html/gui/myPage.php
