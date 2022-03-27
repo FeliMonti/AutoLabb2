@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    stages {
+        stage('checkout') {
+            steps {
+                git "https://github.com/FeliMonti/auto21.git"
+            }
+        }
+        stage('Build') {
+            steps {
+                sh "mvn compile"
+            }
+        }
+        stage('Test') {
+            steps {
+                sh "mvn test"
+            }
+        }
+        stage('API testing with Newman') {
+            steps {
+                sh "newman run Postman_AutoLabb3.postman_collection.json --environment Postman_AutoLabb3_Environment.postman_environment.json --reporters junit"
+            }
+        }
+        stage('Jacoco Code Coverage') {
+            steps {
+                echo 'Code Coverage'
+                jacoco()
+            }
+        }
+        stage('Robot Framework System tests with Selenium') {
+            steps {
+                sh "robot --variable BROWSER:headlesschrome -d Results Tests"
+            }
+            post {
+                always {
+                    script {
+                          step(
+                                [
+                                  $class              : 'RobotPublisher',
+                                  outputPath          : '.',
+                                  outputFileName      : '**/output.xml',
+                                  reportFileName      : '**/report.html',
+                                  logFileName         : '**/log.html',
+                                  disableArchiveOutput: false,
+                                  passThreshold       : 50,
+                                  unstableThreshold   : 40,
+                                  otherFiles          : "**/*.png,**/*.jpg",
+                                ]
+                          )
+                    }
+                }
+            }
+        }
+
+    }
+}
